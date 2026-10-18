@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy and security | harspec</title>
+<meta name="description" content="How harspec redacts secrets, what it never does, and how to use it responsibly.">
+<meta property="og:title" content="Privacy and security | harspec"><meta property="og:description" content="How harspec redacts secrets, what it never does, and how to use it responsibly."><meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f6e56'/%3E%3Ctext x='16' y='22' font-size='16' font-weight='700' text-anchor='middle' fill='white' font-family='monospace'%3E%7B%7D%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top"><button id="menu" aria-label="Menu">&#9776;</button><a class="brand" href="index.html"><span class="logo">{}</span>harspec</a>
+<span class="sp"></span><a class="gh" href="https://github.com/AYUSH-PANDEY023/harspec">GitHub</a><button id="theme" aria-label="Toggle theme">&#9680;</button></header>
+<div class="wrap">
+<nav id="nav"><a href="index.html">Home</a><a href="getting-started.html">Getting started</a><a href="how-it-works.html">How it works</a><a href="reference.html">Reference</a><a href="generators.html">Write a generator</a><a href="security.html" class=on>Privacy and security</a><a href="faq.html">FAQ</a><a href="contributing.html">Contributing</a></nav>
+<main>
+
+<h1>Privacy and security</h1>
+<h2>Everything stays local</h2>
+<p>harspec makes <b>no network requests</b> and has no telemetry. It reads your HAR file and writes files to your output folder.</p>
+<h2>Redaction</h2>
+<p>Redaction runs while the HAR is parsed, before inference or generation. A secret cannot reach the spec, an example or a client.</p>
+<div class="tw"><table><thead><tr><th>Where</th><th>What happens</th></tr></thead><tbody><tr><td><code>Authorization</code> header</td><td>Scheme kept (<code>Bearer</code>), value replaced by <code>&lt;redacted&gt;</code>.</td></tr><tr><td><code>Cookie</code>, <code>Set-Cookie</code></td><td>Cookie names kept, values redacted.</td></tr><tr><td>API key and CSRF headers</td><td>Value redacted.</td></tr><tr><td>JSON, form and query fields named like password, token, secret, api_key, session, csrf, card, otp, jwt</td><td>Value redacted.</td></tr><tr><td>Any string containing a JWT</td><td>JWT replaced by <code>&lt;jwt&gt;</code>.</td></tr></tbody></table></div>
+<p>The test suite greps every output file for the secrets in the sample HAR and fails if any appear.</p>
+<div class="note warn"><b>Important:</b> Redaction is pattern based. Business data in example values (names, emails, IDs) is kept. Skim the output before you publish it anywhere.</div>
+<h2>Your HAR file is the sensitive part</h2>
+<ul>
+<li>Record on a test account when possible.</li>
+<li>Do not email, upload or commit the <code>.har</code>. Add <code>*.har</code> to <code>.gitignore</code>.</li>
+<li>Delete it when finished, and rotate any real credentials that were in it.</li>
+</ul>
+<h2>Use it responsibly</h2>
+<p>Only analyse traffic you are allowed to capture, and only call APIs you are allowed to use. Check the terms of service. harspec describes what a client already sends; it does not bypass authentication.</p>
+<h2>Report a vulnerability</h2>
+<p>Use GitHub private reporting (Security tab) on the <a href="https://github.com/AYUSH-PANDEY023/harspec/security">repository</a>. Do not open a public issue for security problems.</p>
+
+<div class="pn"><a href="generators.html">&larr; Write a generator</a><a href="faq.html">FAQ &rarr;</a></div>
+<footer>MIT licensed. Open source on <a href="https://github.com/AYUSH-PANDEY023/harspec">GitHub</a>. Not affiliated with any other project that uses a similar name.</footer>
+</main>
+</div>
+<script src="assets/site.js"></script>
+</body>
+</html>

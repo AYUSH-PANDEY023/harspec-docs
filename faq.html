@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FAQ | harspec</title>
+<meta name="description" content="Answers to common questions about harspec, HAR files and generated specs.">
+<meta property="og:title" content="FAQ | harspec"><meta property="og:description" content="Answers to common questions about harspec, HAR files and generated specs."><meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f6e56'/%3E%3Ctext x='16' y='22' font-size='16' font-weight='700' text-anchor='middle' fill='white' font-family='monospace'%3E%7B%7D%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top"><button id="menu" aria-label="Menu">&#9776;</button><a class="brand" href="index.html"><span class="logo">{}</span>harspec</a>
+<span class="sp"></span><a class="gh" href="https://github.com/AYUSH-PANDEY023/harspec">GitHub</a><button id="theme" aria-label="Toggle theme">&#9680;</button></header>
+<div class="wrap">
+<nav id="nav"><a href="index.html">Home</a><a href="getting-started.html">Getting started</a><a href="how-it-works.html">How it works</a><a href="reference.html">Reference</a><a href="generators.html">Write a generator</a><a href="security.html">Privacy and security</a><a href="faq.html" class=on>FAQ</a><a href="contributing.html">Contributing</a></nav>
+<main>
+
+<h1>FAQ</h1>
+<h3>What is a HAR file?</h3>
+<p>HTTP Archive: a JSON file that records every request and response a page made. Browsers export it from the Network tab of DevTools.</p>
+<h3>Is the generated spec complete?</h3>
+<p>No. It describes only what you captured. Unseen endpoints, fields and errors are missing, and "required" means "present in every sample". Treat the result as a strong draft and review it.</p>
+<h3>How do I get a better spec?</h3>
+<p>Capture more: every screen, search, create, update, delete, and a few failures. Merge knowledge by running several captures and comparing.</p>
+<h3>Does it support GraphQL?</h3>
+<p>Calls show up as one <code>POST /graphql</code> operation with the request and response shapes seen. Per-query modelling is on the roadmap.</p>
+<h3>Does it work with mobile apps or desktop apps?</h3>
+<p>Yes, if you can record their traffic as HAR (mitmproxy, Charles and Proxyman can export HAR).</p>
+<h3>My response bodies are empty in the spec.</h3>
+<p>Some exports omit bodies. In Chrome use <b>Save all as HAR with content</b>. Some responses (large or binary) are never stored.</p>
+<h3>Is it safe to run on a HAR with tokens?</h3>
+<p>Secrets are redacted in all output and nothing leaves your machine. Still treat the HAR itself as sensitive.</p>
+<h3>Which Python versions?</h3>
+<p>3.9 and newer. No third-party packages.</p>
+<h3>Why does the generated Python client need requests?</h3>
+<p>harspec itself has no dependencies, but the generated client uses <code>requests</code> because most Python developers already have it. A generator for <code>httpx</code> or the standard library is a nice first contribution.</p>
+<h3>Can I use the output in a commercial project?</h3>
+<p>harspec is MIT licensed, so the tool and its generated code are free to use. Whether you may use a given third-party API is governed by that service's terms.</p>
+<h3>How is this different from other tools?</h3>
+<p>Many tools show you traffic; harspec turns it into documentation and code and is built to be extended. Note: another unrelated project uses a similar name; harspec is not affiliated with it.</p>
+<h3>How do I contribute or report a bug?</h3>
+<p>See <a href="contributing.html">Contributing</a>.</p>
+
+<div class="pn"><a href="security.html">&larr; Privacy and security</a><a href="contributing.html">Contributing &rarr;</a></div>
+<footer>MIT licensed. Open source on <a href="https://github.com/AYUSH-PANDEY023/harspec">GitHub</a>. Not affiliated with any other project that uses a similar name.</footer>
+</main>
+</div>
+<script src="assets/site.js"></script>
+</body>
+</html>

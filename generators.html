@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Write a generator | harspec</title>
+<meta name="description" content="Add your own output format to harspec in about 15 lines, and ship it as a pip-installable plugin.">
+<meta property="og:title" content="Write a generator | harspec"><meta property="og:description" content="Add your own output format to harspec in about 15 lines, and ship it as a pip-installable plugin."><meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f6e56'/%3E%3Ctext x='16' y='22' font-size='16' font-weight='700' text-anchor='middle' fill='white' font-family='monospace'%3E%7B%7D%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top"><button id="menu" aria-label="Menu">&#9776;</button><a class="brand" href="index.html"><span class="logo">{}</span>harspec</a>
+<span class="sp"></span><a class="gh" href="https://github.com/AYUSH-PANDEY023/harspec">GitHub</a><button id="theme" aria-label="Toggle theme">&#9680;</button></header>
+<div class="wrap">
+<nav id="nav"><a href="index.html">Home</a><a href="getting-started.html">Getting started</a><a href="how-it-works.html">How it works</a><a href="reference.html">Reference</a><a href="generators.html" class=on>Write a generator</a><a href="security.html">Privacy and security</a><a href="faq.html">FAQ</a><a href="contributing.html">Contributing</a></nav>
+<main>
+
+<h1>Write a generator</h1>
+<p class="lead">A generator is a Python function that receives the OpenAPI spec (a dict) and returns <code>{filename: content}</code>.</p>
+<h2>Minimal example</h2>
+<pre><code>from harspec.generators import register
+
+@register(&quot;routes&quot;, &quot;List of METHOD /path lines&quot;)
+def routes(spec):
+    lines = []
+    for path, item in spec[&quot;paths&quot;].items():
+        for method in item:
+            lines.append(f&quot;{method.upper()} {path}&quot;)
+    return {&quot;routes.txt&quot;: &quot;\n&quot;.join(lines)}</code></pre>
+<p>Run <code>harspec capture.har -f routes</code> and you get <code>routes.txt</code>.</p>
+<h2>Helpers</h2>
+<p>Import from <code>harspec.generators.base</code>:</p>
+<div class="tw"><table><thead><tr><th>Helper</th><th>Returns</th></tr></thead><tbody><tr><td><code>iter_ops(spec)</code></td><td>Yields <code>(path, METHOD, operation)</code> for every endpoint.</td></tr><tr><td><code>base_url(spec)</code></td><td>The server URL.</td></tr><tr><td><code>params_of(op, "path" | "query")</code></td><td>Parameter objects with <code>name</code>, <code>required</code>, <code>schema</code>, <code>example</code>.</td></tr><tr><td><code>body_of(op)</code></td><td><code>(mime, schema, example)</code> or <code>None</code>.</td></tr><tr><td><code>success_schema(op)</code></td><td>Schema of the first 2xx JSON response, or <code>None</code>.</td></tr><tr><td><code>auth_style(spec)</code></td><td><code>(header_name, "Bearer {}")</code> style tuple, or <code>None</code>.</td></tr><tr><td><code>snake(name)</code></td><td><code>getUserPosts</code> to <code>get_user_posts</code>.</td></tr></tbody></table></div>
+<h2>Add it to harspec itself</h2>
+<ol class="steps">
+<li>Create <code>harspec/generators/yourname.py</code> with the decorator above.</li>
+<li>Add <code>yourname</code> to the import line in <code>load_all()</code>.</li>
+<li>Write a test that generates from <code>examples/sample.har</code> and checks the output.</li>
+<li>Open a pull request.</li>
+</ol>
+<h2>Ship it as a plugin package</h2>
+<p>You do not need to touch harspec. Publish your own package that registers through an entry point:</p>
+<pre><code># pyproject.toml of your plugin
+[project]
+name = &quot;harspec-go&quot;
+dependencies = [&quot;harspec&quot;]
+
+[project.entry-points.&quot;harspec.generators&quot;]
+go = &quot;harspec_go.generator&quot;</code></pre>
+<p>After <code>pip install harspec-go</code>, the generator shows up in <code>harspec --list-generators</code> and works with <code>-f go</code>.</p>
+<h2>Ideas wanted</h2>
+<p>Go, Rust, Kotlin, Swift, Dart, Java, C#, PHP and Ruby clients. Bruno and Insomnia collections. k6 load tests. Playwright API tests. WireMock and MSW mock servers. Zod and Pydantic models. Markdown API docs.</p>
+
+<div class="pn"><a href="reference.html">&larr; Reference</a><a href="security.html">Privacy and security &rarr;</a></div>
+<footer>MIT licensed. Open source on <a href="https://github.com/AYUSH-PANDEY023/harspec">GitHub</a>. Not affiliated with any other project that uses a similar name.</footer>
+</main>
+</div>
+<script src="assets/site.js"></script>
+</body>
+</html>

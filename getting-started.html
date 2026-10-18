@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Getting started | harspec</title>
+<meta name="description" content="Install harspec, record a HAR file in your browser, generate an OpenAPI spec and clients.">
+<meta property="og:title" content="Getting started | harspec"><meta property="og:description" content="Install harspec, record a HAR file in your browser, generate an OpenAPI spec and clients."><meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f6e56'/%3E%3Ctext x='16' y='22' font-size='16' font-weight='700' text-anchor='middle' fill='white' font-family='monospace'%3E%7B%7D%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top"><button id="menu" aria-label="Menu">&#9776;</button><a class="brand" href="index.html"><span class="logo">{}</span>harspec</a>
+<span class="sp"></span><a class="gh" href="https://github.com/AYUSH-PANDEY023/harspec">GitHub</a><button id="theme" aria-label="Toggle theme">&#9680;</button></header>
+<div class="wrap">
+<nav id="nav"><a href="index.html">Home</a><a href="getting-started.html" class=on>Getting started</a><a href="how-it-works.html">How it works</a><a href="reference.html">Reference</a><a href="generators.html">Write a generator</a><a href="security.html">Privacy and security</a><a href="faq.html">FAQ</a><a href="contributing.html">Contributing</a></nav>
+<main>
+
+<h1>Getting started</h1>
+<p class="lead">From zero to a generated client in five minutes. You only need Python 3.9 or newer.</p>
+<h2>1. Install</h2>
+<pre><code>pip install harspec</code></pre>
+<p>Check it worked: <code>harspec --version</code>. If the command is not found, use <code>python -m harspec</code> instead.</p>
+<h2>2. Record a HAR file</h2>
+<p>A HAR file is a recording of every request the page made. All major browsers can export one.</p>
+<div class="tw"><table><thead><tr><th>Browser</th><th>How</th></tr></thead><tbody><tr><td>Chrome / Edge</td><td>F12, <b>Network</b> tab, tick <b>Preserve log</b>, use the site, right click a request, <b>Save all as HAR with content</b>.</td></tr><tr><td>Firefox</td><td>F12, <b>Network</b> tab, use the site, click the gear icon, <b>Save All As HAR</b>.</td></tr><tr><td>Safari</td><td>Develop menu, <b>Show Web Inspector</b>, <b>Network</b> tab, use the site, <b>Export</b>.</td></tr></tbody></table></div>
+<p>Tips for a good capture: log in, open the main screens, search, create and delete something. Every action you do adds endpoints to the spec. Use the <b>Fetch/XHR</b> filter if the list is noisy (harspec also filters automatically).</p>
+<div class="note warn"><b>Important:</b> The HAR contains live credentials. Use a test account, delete the file when done, and never commit it. harspec redacts secrets in its output, not in your original file.</div>
+<p><b>Mobile apps?</b> Route the phone through a proxy such as mitmproxy or Charles and export the session as HAR, then use harspec the same way.</p>
+<h2>3. Run harspec</h2>
+<pre><code>harspec capture.har</code></pre>
+<p>You will see a summary like this:</p>
+<pre><code>harspec 0.1.0: 14 requests -&gt; 11 API calls on api.petshop.example
+  6 endpoints across 4 paths
+  auth: bearerAuth, cookieAuth (login: POST /v1/auth/login)
+  wrote to harspec-out/: openapi.yaml, AUTH.md, examples.sh, ...</code></pre>
+<p>If the capture has several hosts (for example an API plus analytics), harspec picks the busiest and tells you the others. Choose one with <code>--host api.example.com</code>.</p>
+<h2>4. Use the output</h2>
+<div class="tw"><table><thead><tr><th>File</th><th>What to do with it</th></tr></thead><tbody><tr><td><code>openapi.yaml</code></td><td>Open in Swagger Editor (editor.swagger.io), import into Postman or Insomnia, or feed to any OpenAPI tool.</td></tr><tr><td><code>client.ts</code></td><td>Copy into your TypeScript project. Works with any runtime that has <code>fetch</code> (browsers, Node 18+, Deno, Bun).</td></tr><tr><td><code>client.py</code></td><td>Copy into your Python project. Needs <code>pip install requests</code>.</td></tr><tr><td><code>examples.sh</code></td><td>Set <code>TOKEN</code> and run any command to try an endpoint.</td></tr><tr><td><code>postman_collection.json</code></td><td>Postman: Import, then set the <code>token</code> variable.</td></tr><tr><td><code>AUTH.md</code></td><td>Read first: it explains how to obtain a token.</td></tr></tbody></table></div>
+<h3>Python client</h3>
+<pre><code>from client import Client
+
+api = Client(token=&quot;YOUR_TOKEN&quot;)
+pets = api.get_pets(params={&quot;limit&quot;: 10})
+pet = api.get_pet(42)</code></pre>
+<h3>TypeScript client</h3>
+<pre><code>import { Client } from &quot;./client&quot;;
+
+const api = new Client({ token: &quot;YOUR_TOKEN&quot; });
+const pets = await api.getPets({ limit: 10 });</code></pre>
+<p>Errors throw <code>ApiError</code> with the HTTP <code>status</code> and parsed <code>body</code>.</p>
+<h2>Try it without a HAR</h2>
+<p>The repository ships a sample capture of a fake pet shop API:</p>
+<pre><code>git clone https://github.com/AYUSH-PANDEY023/harspec.git
+cd harspec
+python -m harspec examples/sample.har</code></pre>
+
+<div class="pn"><a href="index.html">&larr; Home</a><a href="how-it-works.html">How it works &rarr;</a></div>
+<footer>MIT licensed. Open source on <a href="https://github.com/AYUSH-PANDEY023/harspec">GitHub</a>. Not affiliated with any other project that uses a similar name.</footer>
+</main>
+</div>
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reference | harspec</title>
+<meta name="description" content="Command line options, output files and the OpenAPI extensions harspec writes.">
+<meta property="og:title" content="Reference | harspec"><meta property="og:description" content="Command line options, output files and the OpenAPI extensions harspec writes."><meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f6e56'/%3E%3Ctext x='16' y='22' font-size='16' font-weight='700' text-anchor='middle' fill='white' font-family='monospace'%3E%7B%7D%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top"><button id="menu" aria-label="Menu">&#9776;</button><a class="brand" href="index.html"><span class="logo">{}</span>harspec</a>
+<span class="sp"></span><a class="gh" href="https://github.com/AYUSH-PANDEY023/harspec">GitHub</a><button id="theme" aria-label="Toggle theme">&#9680;</button></header>
+<div class="wrap">
+<nav id="nav"><a href="index.html">Home</a><a href="getting-started.html">Getting started</a><a href="how-it-works.html">How it works</a><a href="reference.html" class=on>Reference</a><a href="generators.html">Write a generator</a><a href="security.html">Privacy and security</a><a href="faq.html">FAQ</a><a href="contributing.html">Contributing</a></nav>
+<main>
+
+<h1>Reference</h1>
+<h2>Command line</h2>
+<pre><code>harspec HAR_FILE [options]</code></pre>
+<div class="tw"><table><thead><tr><th>Option</th><th>Default</th><th>Meaning</th></tr></thead><tbody><tr><td><code>-o, --out DIR</code></td><td><code>harspec-out</code></td><td>Output directory (created if missing).</td></tr><tr><td><code>-f, --formats LIST</code></td><td>all</td><td>Comma list of generators, e.g. <code>typescript,python</code>.</td></tr><tr><td><code>--host HOST</code></td><td>busiest host</td><td>Only use requests to this host.</td></tr><tr><td><code>--title TEXT</code></td><td>host name</td><td>Title in the OpenAPI <code>info</code> block.</td></tr><tr><td><code>--json</code></td><td>off</td><td>Write <code>openapi.json</code> instead of <code>openapi.yaml</code>.</td></tr><tr><td><code>--no-cluster</code></td><td>off</td><td>Do not detect mixed alphanumeric IDs.</td></tr><tr><td><code>--include-static</code></td><td>off</td><td>Keep html, js, css and image requests.</td></tr><tr><td><code>--list-generators</code></td><td></td><td>List built-in and plugin generators, then exit.</td></tr><tr><td><code>--version</code></td><td></td><td>Print the version.</td></tr></tbody></table></div>
+<p><b>Exit codes:</b> <code>0</code> success, <code>1</code> unreadable or invalid HAR, or no API traffic found, <code>2</code> bad arguments.</p>
+<h2>Output files</h2>
+<div class="tw"><table><thead><tr><th>File</th><th>Generator</th><th>Notes</th></tr></thead><tbody><tr><td><code>openapi.yaml</code> / <code>.json</code></td><td>built in</td><td>OpenAPI 3.0.3. Always written.</td></tr><tr><td><code>AUTH.md</code></td><td>built in</td><td>Always written.</td></tr><tr><td><code>client.ts</code></td><td><code>typescript</code></td><td>No runtime dependencies. Passes <code>tsc --strict</code>.</td></tr><tr><td><code>client.py</code></td><td><code>python</code></td><td>Needs <code>requests</code>.</td></tr><tr><td><code>examples.sh</code></td><td><code>curl</code></td><td>Uses <code>$TOKEN</code> and <code>$BASE</code>.</td></tr><tr><td><code>postman_collection.json</code></td><td><code>postman</code></td><td>Collection v2.1 with <code>baseUrl</code> and <code>token</code> variables.</td></tr></tbody></table></div>
+<h2>Operation naming</h2>
+<p>Operation IDs come from the method and path: <code>GET /users/{user_id}/posts</code> becomes <code>getUserPosts</code>. Collections keep the plural (<code>getPets</code>), items use the singular (<code>getPet</code>). Duplicates get a numeric suffix. Python methods are the snake_case form (<code>get_user_posts</code>).</p>
+<h2>OpenAPI extensions</h2>
+<div class="tw"><table><thead><tr><th>Field</th><th>Meaning</th></tr></thead><tbody><tr><td><code>x-harspec-samples</code></td><td>Number of captured requests behind the operation. Low numbers mean low confidence.</td></tr></tbody></table></div>
+<h2>Using the spec with other tools</h2>
+<div class="tw"><table><thead><tr><th>Tool</th><th>How</th></tr></thead><tbody><tr><td>Swagger Editor / Swagger UI</td><td>Paste or upload <code>openapi.yaml</code>.</td></tr><tr><td>Postman, Insomnia, Bruno</td><td>Import the OpenAPI file or the Postman collection.</td></tr><tr><td>openapi-generator</td><td><code>openapi-generator-cli generate -i openapi.yaml -g go -o ./client</code> for languages harspec does not cover yet.</td></tr><tr><td>Mock servers (Prism)</td><td><code>prism mock openapi.yaml</code></td></tr></tbody></table></div>
+
+<div class="pn"><a href="how-it-works.html">&larr; How it works</a><a href="generators.html">Write a generator &rarr;</a></div>
+<footer>MIT licensed. Open source on <a href="https://github.com/AYUSH-PANDEY023/harspec">GitHub</a>. Not affiliated with any other project that uses a similar name.</footer>
+</main>
+</div>
+<script src="assets/site.js"></script>
+</body>
+</html>

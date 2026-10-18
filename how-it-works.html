@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How it works | harspec</title>
+<meta name="description" content="The harspec pipeline: parse, redact, group endpoints, infer schemas, detect auth, generate.">
+<meta property="og:title" content="How it works | harspec"><meta property="og:description" content="The harspec pipeline: parse, redact, group endpoints, infer schemas, detect auth, generate."><meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f6e56'/%3E%3Ctext x='16' y='22' font-size='16' font-weight='700' text-anchor='middle' fill='white' font-family='monospace'%3E%7B%7D%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top"><button id="menu" aria-label="Menu">&#9776;</button><a class="brand" href="index.html"><span class="logo">{}</span>harspec</a>
+<span class="sp"></span><a class="gh" href="https://github.com/AYUSH-PANDEY023/harspec">GitHub</a><button id="theme" aria-label="Toggle theme">&#9680;</button></header>
+<div class="wrap">
+<nav id="nav"><a href="index.html">Home</a><a href="getting-started.html">Getting started</a><a href="how-it-works.html" class=on>How it works</a><a href="reference.html">Reference</a><a href="generators.html">Write a generator</a><a href="security.html">Privacy and security</a><a href="faq.html">FAQ</a><a href="contributing.html">Contributing</a></nav>
+<main>
+
+<h1>How it works</h1>
+<p class="lead">harspec is a small pipeline. Each stage is a short Python module you can read in a few minutes.</p>
+<div class="tw"><table><thead><tr><th>Stage</th><th>Module</th><th>What happens</th></tr></thead><tbody><tr><td>1. Parse and filter</td><td><code>har.py</code></td><td>Reads <code>log.entries</code>, decodes bodies, drops html, js, css, images, fonts, failed requests and CORS preflights.</td></tr><tr><td>2. Redact</td><td><code>redact.py</code></td><td>Removes secrets immediately, before the data goes anywhere else.</td></tr><tr><td>3. Group endpoints</td><td><code>paths.py</code></td><td>Turns concrete URLs into templates with path parameters.</td></tr><tr><td>4. Infer schemas</td><td><code>schema.py</code></td><td>Builds a JSON schema per sample and merges them.</td></tr><tr><td>5. Detect auth</td><td><code>auth.py</code></td><td>Finds credential types, login endpoints and CSRF headers.</td></tr><tr><td>6. Build the spec</td><td><code>openapi.py</code></td><td>Assembles OpenAPI 3.0.3 with operations, parameters, bodies, responses, security.</td></tr><tr><td>7. Generate</td><td><code>generators/</code></td><td>Each output format is produced <b>from the spec</b>, not from raw traffic.</td></tr></tbody></table></div>
+<h2>Path parameters</h2>
+<p>These segments become parameters: numbers, UUIDs, long hex strings, dates, and long mixed alphanumeric IDs. The parameter is named after the previous word.</p>
+<pre><code>/users/42/posts/7        -&gt;  /users/{user_id}/posts/{post_id}
+/owners/3f2a-...-9c1/pets -&gt;  /owners/{owner_id}/pets
+/v1/pets                 -&gt;  /v1/pets          (v1 stays literal)</code></pre>
+<p>Short mixed IDs such as <code>sku123</code> are detected by clustering: if three or more different values share the same surrounding path, harspec treats that position as a parameter. Turn this off with <code>--no-cluster</code>.</p>
+<h2>Schema inference</h2>
+<div class="tw"><table><thead><tr><th>Seen in the capture</th><th>Result</th></tr></thead><tbody><tr><td>Field in every sample</td><td><code>required</code></td></tr><tr><td>Field missing in some samples</td><td>optional</td></tr><tr><td><code>null</code> in some samples</td><td><code>nullable: true</code></td></tr><tr><td>Integer in one sample, decimal in another</td><td><code>number</code></td></tr><tr><td>String in one, number in another</td><td><code>oneOf</code></td></tr><tr><td>UUID, date-time, date, email, URL strings</td><td><code>format</code> set accordingly</td></tr><tr><td>Same path, several status codes</td><td>one response per status</td></tr><tr><td>Query parameter in every call</td><td>required; otherwise optional</td></tr></tbody></table></div>
+<p>Query values arrive as text, so <code>limit=10</code> is typed <code>integer</code>. Repeated keys become arrays.</p>
+<h2>Auth detection</h2>
+<p>harspec looks at request headers and cookies (values already redacted) and responses of login-like endpoints:</p>
+<div class="tw"><table><thead><tr><th>Signal</th><th>Detected as</th></tr></thead><tbody><tr><td><code>Authorization: Bearer ...</code></td><td><code>bearerAuth</code> (HTTP bearer)</td></tr><tr><td><code>Authorization: Basic ...</code></td><td><code>basicAuth</code></td></tr><tr><td><code>X-API-Key</code>, <code>X-Auth-Token</code> and similar</td><td>API key in header</td></tr><tr><td>Cookie named like session, sid, auth, jwt</td><td><code>cookieAuth</code></td></tr><tr><td>2xx JSON response on a login, token or oauth path containing a token field</td><td>login endpoint, listed in <code>AUTH.md</code></td></tr><tr><td><code>X-CSRF-Token</code> and similar</td><td>CSRF header, listed in <code>AUTH.md</code></td></tr></tbody></table></div>
+<p>When a request sends both a token and a session cookie, the operation is marked with the token scheme only.</p>
+<h2>Why generators read the spec</h2>
+<p>Because every generator takes the OpenAPI dictionary, a generator never needs to understand HAR files, redaction or inference. It just walks <code>paths</code>. That keeps each generator around 60 lines and makes new ones easy to write.</p>
+
+<div class="pn"><a href="getting-started.html">&larr; Getting started</a><a href="reference.html">Reference &rarr;</a></div>
+<footer>MIT licensed. Open source on <a href="https://github.com/AYUSH-PANDEY023/harspec">GitHub</a>. Not affiliated with any other project that uses a similar name.</footer>
+</main>
+</div>
+<script src="assets/site.js"></script>
+</body>
+</html>
